@@ -10,21 +10,18 @@ module.exports = async (req, res) => {
   try {
     const { goal, allergies, snacks } = req.body;
 
-    const prompt = `
-Suggest ${snacks} snack ideas for someone who wants a ${goal} diet.
-Avoid: ${allergies}. Keep it concise and bulleted.
-`;
+    const prompt = `Suggest ${snacks} healthy snacks for someone with a "${goal}" goal. Avoid these ingredients: ${allergies}. Format the result as a short bullet list.`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 300,
+      max_tokens: 200,
       temperature: 0.5
     });
 
     res.status(200).json({ result: completion.choices[0].message.content });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to generate snacks." });
+    console.error("OpenAI error:", error);
+    res.status(500).json({ error: "OpenAI API call failed." });
   }
 };
